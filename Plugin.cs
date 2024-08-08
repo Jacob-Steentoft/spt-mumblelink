@@ -40,7 +40,8 @@ public class Plugin : BaseUnityPlugin
 				return;
 			}
 
-			CloseLink();
+			_mumbleLink.Dispose();
+			_mumbleLink = null;
 			return;
 		}
 		
@@ -59,15 +60,10 @@ public class Plugin : BaseUnityPlugin
 			}
 			case { InRaid: false } when _mumbleLink is not null:
 			{
-				CloseLink();
+				_mumbleLink.Dispose();
+				_mumbleLink = null;
 				return;
 			}
 		}
-	}
-
-	private void CloseLink()
-	{
-		_mumbleLink?.Dispose();
-		_mumbleLink = null;
 	}
 }
