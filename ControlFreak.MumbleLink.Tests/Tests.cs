@@ -10,8 +10,11 @@ public class Tests
 	public void CanCreateAndUseMumbleLink()
 	{
 		using var connection = new MumbleLinkConnection("test", "testing");
-		connection.Update(Vector3.up, Vector3.forward, Vector3.zero);
-		
+		for (var i = 0; i < 1_000_000; i++)
+		{
+			connection.Update(Vector3.up, Vector3.forward, Vector3.zero);
+		}
+
 		Assert.True(true);
 	}
 }

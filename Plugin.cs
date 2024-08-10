@@ -1,26 +1,27 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging;
-using Comfort.Common;
-using EFT;
-using JetBrains.Annotations;
+using Fika.Core.Coop.Components;
 using SPT.MumbleLink.Services;
 
 namespace SPT.MumbleLink;
 
-[BepInPlugin("ControlFreak.MumbleLink", "MumbleLink", "1.0.0")]
+[BepInPlugin("com.ControlFreak.MumbleLink", "MumbleLink", Version)]
+[BepInDependency("com.fika.core")]
 public class Plugin : BaseUnityPlugin
 {
-	private static ManualLogSource _logSource;
-	private static ConfigEntry<bool> _enabled;
+	public const string Version = "1.0.0";
+	private static ConfigEntry<bool> _enabled = null!;
+	private static ConfigEntry<bool> _debug = null!;
+	private CoopHandler? _coopHandler;
 
-	[CanBeNull] private MumbleLinkConnection _mumbleLink;
+
+	private static MumbleLinkConnection? _mumbleLink;
 
 	private void Awake()
 	{
-		_enabled = Config.Bind("MumbleLink", "Enabled", true, "");
-		_logSource = Logger;
-		_logSource.LogInfo("MumbleLink loaded");
+		_debug = Config.Bind("MumbleLink", "Enable Debug Logs", false, string.Empty);
+		_enabled = Config.Bind("MumbleLink", "Enable MumbleLink", true, string.Empty);
+		Logger.LogInfo($"MumbleLink version '{Version}' loaded");
 	}
 
 	private void Update()
@@ -29,41 +30,40 @@ public class Plugin : BaseUnityPlugin
 		{
 			return;
 		}
-		
-		var game = Singleton<AbstractGame>.Instance;
-		var player = Singleton<GameWorld>.Instance.MainPlayer;
 
-		if (game is null || player is null || !player.isActiveAndEnabled)
+		if (_coopHandler == null)
 		{
-			if (_mumbleLink is null)
+			if (CoopHandler.GetCoopHandler() is not { } coopHandler)
 			{
 				return;
 			}
 
-			_mumbleLink.Dispose();
-			_mumbleLink = null;
+			_coopHandler = coopHandler;
+		}
+
+		var player = _coopHandler.MyPlayer;
+
+		if (_debug.Value)
+		{
+			Logger.LogMessage("IsYourPlayer: " + player?.IsYourPlayer);
+			Logger.LogMessage("IsAlive: " + player?.HealthController.IsAlive);
+			Logger.LogMessage("HasExtracted: " + !_coopHandler.ExtractedPlayers.Contains(player?.NetId ?? 0));
+		}
+
+		if (player is { HealthController.IsAlive: true } && !_coopHandler.ExtractedPlayers.Contains(player.NetId))
+		{
+			_mumbleLink ??= new MumbleLinkConnection(player.AccountId, player.GroupId);
+			var camera = player.CameraPosition;
+			_mumbleLink.Update(camera.up, camera.forward, camera.position);
 			return;
 		}
-		
-		var camera = player.CameraPosition;
-		switch (game)
+
+		if (_mumbleLink is null)
 		{
-			case { InRaid: true } when _mumbleLink is null:
-			{
-				_mumbleLink = new MumbleLinkConnection(player.AccountId, player.GroupId);
-				return;
-			}
-			case { InRaid: true } when _mumbleLink is not null:
-			{
-				_mumbleLink.Update(camera.up, camera.forward, camera.position);
-				return;
-			}
-			case { InRaid: false } when _mumbleLink is not null:
-			{
-				_mumbleLink.Dispose();
-				_mumbleLink = null;
-				return;
-			}
+			return;
 		}
+
+		_mumbleLink.Dispose();
+		_mumbleLink = null;
 	}
 }
