@@ -45,8 +45,7 @@ public class Plugin : BaseUnityPlugin
 
 		if (_debug.Value)
 		{
-			Logger.LogMessage("IsYourPlayer: " + player?.IsYourPlayer);
-			Logger.LogMessage("IsAlive: " + player?.HealthController.IsAlive);
+			Logger.LogMessage("IsPlayerAlive: " + player?.HealthController.IsAlive);
 			Logger.LogMessage("HasExtracted: " + !_coopHandler.ExtractedPlayers.Contains(player?.NetId ?? 0));
 		}
 
