@@ -11,28 +11,25 @@ public sealed class MumbleLinkConnection : IDisposable
 		? $"/dev/shm/MumbleLink.{getuid()}"
 		: "MumbleLink";
 
-	private readonly MumbleLinkData _data;
-	private readonly MemoryMappedViewStream _stream;
+	private readonly MumbleLinkDataWriter _dataWriter;
 
 	public MumbleLinkConnection(string playerId, string playerGroup)
 	{
-		using var mappedFile = MemoryMappedFile.CreateOrOpen(MapName, MumbleLinkData.Size);
-		_stream = mappedFile.CreateViewStream(0, MumbleLinkData.Size);
-		_data = new MumbleLinkData(playerId, playerGroup);
+		using var mappedFile = MemoryMappedFile.CreateOrOpen(MapName, MumbleLinkDataWriter.Bytes);
+		var stream = mappedFile.CreateViewStream(0, MumbleLinkDataWriter.Bytes);
+		_dataWriter = new MumbleLinkDataWriter(playerId, playerGroup, stream);
 	}
 
 	public void Update(Vector3 up, Vector3 forward, Vector3 position)
 	{
-		_stream.Position = 0;
+		_dataWriter.Update(up, forward, position);
 
-		_data.Update(up, forward, position);
-
-		_data.Write(_stream);
+		_dataWriter.Write();
 	}
 
 	public void Dispose()
 	{
-		_stream.Dispose();
+		_dataWriter.Dispose();
 	}
 
 	[DllImport("libc")]

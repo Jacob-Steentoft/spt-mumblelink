@@ -67,7 +67,7 @@
 	<ItemGroup>
 		<Compile Include="Plugin.cs" />
 		<Compile Include="Properties\AssemblyInfo.cs"/>
-		<Compile Include="Services\MumbleLinkData.cs" />
+		<Compile Include="Services\MumbleLinkDataWriter.cs" />
 		<Compile Include="Services\MumbleLinkConnection.cs" />
 	</ItemGroup>
 	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

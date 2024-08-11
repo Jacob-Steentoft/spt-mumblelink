@@ -6,18 +6,18 @@ using UnityEngine;
 
 namespace SPT.MumbleLink.Services;
 
-public sealed class MumbleLinkData(string identity, string context)
+public sealed class MumbleLinkDataWriter(string identity, string context, Stream stream) : IDisposable
 {
-	static MumbleLinkData()
+	static MumbleLinkDataWriter()
 	{
 		var isUnix = Environment.OSVersion.Platform == PlatformID.Unix;
 		PlatformEncoding = isUnix ? Encoding.UTF32 : Encoding.Unicode;
-		Size = isUnix ? 10580 : 5460;
 		PlatformByteSize = PlatformEncoding.GetByteCount(" ");
 		UTF8ByteSize = Encoding.UTF8.GetByteCount(" ");
+		Bytes = (256 * 2 + 2048) * PlatformByteSize + 340;
 	}
 
-	public static readonly int Size;
+	public static readonly int Bytes;
 
 	private static readonly ArrayPool<byte> MemoryManager = ArrayPool<byte>.Create();
 	private static readonly int PlatformByteSize;
@@ -28,6 +28,8 @@ public sealed class MumbleLinkData(string identity, string context)
 	private const string Name = "Spt.MumbleLink";
 	private const string Description = "A Mumble link plugin for Single Player Tarkov.";
 
+	private readonly BinaryWriter _writer =  new(stream, PlatformEncoding, false);
+	
 	private uint _uiTick;
 	private Vector3 _fCameraPosition;
 	private Vector3 _fCameraFront;
@@ -41,21 +43,21 @@ public sealed class MumbleLinkData(string identity, string context)
 		_fCameraPosition = position;
 	}
 
-	public void Write(Stream stream)
+	public void Write()
 	{
-		using var writer = new BinaryWriter(stream, PlatformEncoding, true);
-		writer.Write(UIVersion);
-		writer.Write(_uiTick);
-		WriteVec3(writer, _fCameraPosition);
-		WriteVec3(writer, _fCameraFront);
-		WriteVec3(writer, _fCameraTop);
-		WritePlatformString(writer, 256, Name);
-		WriteVec3(writer, _fCameraPosition);
-		WriteVec3(writer, _fCameraFront);
-		WriteVec3(writer, _fCameraTop);
-		WritePlatformString(writer, 256, identity);
-		WriteUtf8String(writer, 256, context);
-		WritePlatformString(writer, 2048, Description);
+		_writer.Write(UIVersion);
+		_writer.Write(_uiTick);
+		WriteVec3(_writer, _fCameraPosition);
+		WriteVec3(_writer, _fCameraFront);
+		WriteVec3(_writer, _fCameraTop);
+		WritePlatformString(_writer, 256, Name);
+		WriteVec3(_writer, _fCameraPosition);
+		WriteVec3(_writer, _fCameraFront);
+		WriteVec3(_writer, _fCameraTop);
+		WritePlatformString(_writer, 256, identity);
+		WriteUtf8String(_writer, 256, context);
+		WritePlatformString(_writer, 2048, Description);
+		stream.Position = 0;
 	}
 
 	private static void WriteVec3(BinaryWriter writer, Vector3 vector)
@@ -86,5 +88,10 @@ public sealed class MumbleLinkData(string identity, string context)
 		writer.Write((uint)encodedBufferLength);
 		writer.Write(buffer, 0, bufferLength);
 		MemoryManager.Return(buffer, true);
+	}
+
+	public void Dispose()
+	{
+		_writer.Dispose();
 	}
 }
