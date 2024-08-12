@@ -5,6 +5,8 @@ using UnityEngine;
 namespace ControlFreak.MumbleLink.Benchmarks.Benchmarks;
 
 [MemoryDiagnoser]
+[MonoJob("Mono x64", @"C:\Program Files\Mono\bin\mono.exe")]
+[SimpleJob]
 public class DataWrite
 {
 	private MumbleLinkConnection _connection;
