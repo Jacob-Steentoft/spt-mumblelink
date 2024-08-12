@@ -4,6 +4,8 @@ This is a plugin for SPT and FIKA to transmit your character's location to Mumbl
 
 ## How it works
 
+All players must have the plugin installed to transmit their position.
+
 ```
 Bob, Alice, and Thomas are all in the same raid and alive:
 ✅<Bob> can hear directions and distance for <Alice> and <Thomas>.
