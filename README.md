@@ -2,6 +2,37 @@
 
 This is a plugin for SPT and FIKA to transmit your character's location to Mumble to enable positional audio.
 
+## How it works
+
+All players must have the plugin installed to transmit their position.
+
+```
+Bob, Alice, and Thomas are all in the same raid and alive:
+✅<Bob> can hear directions and distance for <Alice> and <Thomas>.
+✅<Alice> can hear directions and distance for <Bob> and <Thomas>.
+✅<Thomas> can hear directions and distance for <Bob> and <Alice>.
+
+Bob is in the raid, but Alice and Thomas are dead:
+❌<Bob> can hear without directions and distance for <Alice> and <Thomas>.
+❌<Alice> can hear without directions and distance for <Bob> and <Thomas>.
+❌<Thomas> can hear without directions and distance for <Bob> and <Alice>.
+
+Alice has left the raid (extracted), and Bob and Thomas are still alive:
+✅<Bob> can hear directions and distance for <Thomas>.
+❌<Bob> can hear without directions and distance for <Alice>.
+✅<Thomas> can hear directions and distance for <Bob>.
+❌<Thomas> can hear without directions and distance for <Alice>.
+❌<Alice> can hear without directions and distance for <Bob> and <Thomas>.
+
+Thomas is dead, Bob is in the raid, and Alice has left the raid:
+❌<Bob> can hear without directions and distance for <Alice> and <Thomas>.
+❌<Alice> can hear without directions and distance for <Bob> and <Thomas>.
+❌<Thomas> can hear without directions and distance for <Bob> and <Alice>.
+
+All are out of the raid (either dead or extracted):
+❌<Bob>, <Alice>, and <Thomas> can all hear each other without directions and distance.
+```
+
 ## How to install
 
 1. Make sure that the [Fika Plugin](https://github.com/project-fika/Fika-Plugin) has been installed.
