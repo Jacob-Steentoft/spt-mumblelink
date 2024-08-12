@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using EFT.Communications;
 using Fika.Core.Coop.Components;
 using SPT.MumbleLink.Configurations;
 using SPT.MumbleLink.Services;
@@ -9,20 +10,15 @@ namespace SPT.MumbleLink;
 [BepInDependency("com.fika.core")]
 public class Plugin : BaseUnityPlugin
 {
-	public const string Version = "1.0.2";
-	
-	private static readonly BepInConfig BepInConfig = BepInConfig.Instance;
+	public const string Version = "1.1.0";
 
 	private static CoopHandler? _coopHandler;
 	private static MumbleLinkConnection? _mumbleLink;
 
 	private void Awake()
 	{
-		BepInConfig.Instance = new BepInConfig
-		{
-			DebugLogs = Config.Bind("MumbleLink", "Enable Debug Logs", false, string.Empty),
-			Enabled = Config.Bind("MumbleLink", "Enable MumbleLink", true, string.Empty),
-		};
+		BepInConfig.DebugLogs = Config.Bind("MumbleLink", "Enable Debug Logs", false);
+		BepInConfig.Enabled = Config.Bind("MumbleLink", "Enable MumbleLink", true);
 
 		Logger.LogInfo($"MumbleLink version '{Version}' loaded");
 	}
@@ -54,7 +50,12 @@ public class Plugin : BaseUnityPlugin
 
 		if (player is { HealthController.IsAlive: true } && !_coopHandler.ExtractedPlayers.Contains(player.NetId))
 		{
-			_mumbleLink ??= new MumbleLinkConnection(player.AccountId, player.GroupId);
+			if (_mumbleLink == null)
+			{
+				_mumbleLink = new MumbleLinkConnection(player.AccountId, player.GroupId);
+				Toast("[SPT.MumbleLink] Data is now being shared with Mumble");
+			}
+
 			var camera = player.CameraPosition;
 			_mumbleLink.Update(camera.up, camera.forward, camera.position);
 			return;
@@ -67,5 +68,12 @@ public class Plugin : BaseUnityPlugin
 
 		_mumbleLink.Dispose();
 		_mumbleLink = null;
+		Toast("[SPT.MumbleLink] Data is no longer shared with Mumble.", true);
+	}
+
+	private static void Toast(string message, bool forLong = false)
+	{
+		NotificationManagerClass.DisplayMessageNotification(message, forLong ? ENotificationDurationType.Long : ENotificationDurationType.Default);
+		EFT.UI.ConsoleScreen.Log(message);
 	}
 }

@@ -2,9 +2,8 @@
 
 namespace SPT.MumbleLink.Configurations;
 
-public sealed class BepInConfig
+public static class BepInConfig
 {
-	public static BepInConfig Instance { get; set; } = null!;
-	public required ConfigEntry<bool> Enabled { get; init; }
-	public required ConfigEntry<bool> DebugLogs { get; init; }
+	public static ConfigEntry<bool> Enabled = null!;
+	public static ConfigEntry<bool> DebugLogs = null!;
 }
