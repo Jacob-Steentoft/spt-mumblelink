@@ -11,7 +11,7 @@
 		<AppDesignerFolder>Properties</AppDesignerFolder>
 		<RootNamespace>ControlFreak.MumbleLink.Benchmarks</RootNamespace>
 		<AssemblyName>ControlFreak.MumbleLink.Benchmarks</AssemblyName>
-		<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+		<TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
 		<FileAlignment>512</FileAlignment>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<LangVersion>Latest</LangVersion>

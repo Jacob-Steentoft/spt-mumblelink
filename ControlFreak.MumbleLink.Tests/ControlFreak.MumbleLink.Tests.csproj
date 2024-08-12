@@ -11,7 +11,7 @@
 		<AppDesignerFolder>Properties</AppDesignerFolder>
 		<RootNamespace>SPT.MumbleLink.Tests</RootNamespace>
 		<AssemblyName>ControlFreak.MumbleLink.Tests</AssemblyName>
-		<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+		<TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
 		<FileAlignment>512</FileAlignment>
 		<LangVersion>Latest</LangVersion>
 	</PropertyGroup>
