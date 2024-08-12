@@ -1,6 +1,6 @@
 ﻿using BepInEx;
-using BepInEx.Configuration;
 using Fika.Core.Coop.Components;
+using SPT.MumbleLink.Configurations;
 using SPT.MumbleLink.Services;
 
 namespace SPT.MumbleLink;
@@ -9,24 +9,27 @@ namespace SPT.MumbleLink;
 [BepInDependency("com.fika.core")]
 public class Plugin : BaseUnityPlugin
 {
-	public const string Version = "1.0.1";
-	private static ConfigEntry<bool> _enabled = null!;
-	private static ConfigEntry<bool> _debug = null!;
-	private CoopHandler? _coopHandler;
+	public const string Version = "1.0.2";
+	
+	private static readonly BepInConfig BepInConfig = BepInConfig.Instance;
 
-
+	private static CoopHandler? _coopHandler;
 	private static MumbleLinkConnection? _mumbleLink;
 
 	private void Awake()
 	{
-		_debug = Config.Bind("MumbleLink", "Enable Debug Logs", false, string.Empty);
-		_enabled = Config.Bind("MumbleLink", "Enable MumbleLink", true, string.Empty);
+		BepInConfig.Instance = new BepInConfig
+		{
+			DebugLogs = Config.Bind("MumbleLink", "Enable Debug Logs", false, string.Empty),
+			Enabled = Config.Bind("MumbleLink", "Enable MumbleLink", true, string.Empty),
+		};
+
 		Logger.LogInfo($"MumbleLink version '{Version}' loaded");
 	}
 
 	private void Update()
 	{
-		if (!_enabled.Value)
+		if (!BepInConfig.Enabled.Value)
 		{
 			return;
 		}
@@ -43,7 +46,7 @@ public class Plugin : BaseUnityPlugin
 
 		var player = _coopHandler.MyPlayer;
 
-		if (_debug.Value)
+		if (BepInConfig.DebugLogs.Value)
 		{
 			Logger.LogMessage("IsPlayerAlive: " + player?.HealthController.IsAlive);
 			Logger.LogMessage("HasExtracted: " + !_coopHandler.ExtractedPlayers.Contains(player?.NetId ?? 0));
