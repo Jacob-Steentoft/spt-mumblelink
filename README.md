@@ -4,6 +4,7 @@ This is a plugin for SPT and FIKA to transmit your character's location to Mumbl
 
 ## How it works
 
+```
 Bob, Alice, and Thomas are all in the same raid and alive:
 ✅<Bob> can hear directions and distance for <Alice> and <Thomas>.
 ✅<Alice> can hear directions and distance for <Bob> and <Thomas>.
@@ -28,6 +29,7 @@ Thomas is dead, Bob is in the raid, and Alice has left the raid:
 
 All are out of the raid (either dead or extracted):
 ❌<Bob>, <Alice>, and <Thomas> can all hear each other without directions and distance.
+```
 
 ## How to install
 
